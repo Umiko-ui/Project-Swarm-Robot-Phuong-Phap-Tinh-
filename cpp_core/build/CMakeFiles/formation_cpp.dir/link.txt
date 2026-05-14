@@ -1,0 +1,1 @@
+/usr/bin/c++ -fPIC -shared -flto=auto -Wl,--dependency-file=CMakeFiles/formation_cpp.dir/link.d  -o /home/Saya/Project/autonomousRobot-main/formation_cpp.cpython-314-x86_64-linux-gnu.so CMakeFiles/formation_cpp.dir/bindings.cpp.o  libformation_core.a

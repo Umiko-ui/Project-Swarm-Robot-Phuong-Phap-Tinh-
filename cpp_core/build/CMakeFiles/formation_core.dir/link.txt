@@ -1,0 +1,2 @@
+/usr/bin/ar qc libformation_core.a CMakeFiles/formation_core.dir/formation_kernel.cpp.o CMakeFiles/formation_core.dir/Spatial_grid.cpp.o CMakeFiles/formation_core.dir/ellipse_kernel.cpp.o
+/usr/bin/ranlib libformation_core.a

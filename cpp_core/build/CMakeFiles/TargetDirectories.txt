@@ -1,0 +1,4 @@
+/home/Saya/Project/autonomousRobot-main/cpp_core/build/CMakeFiles/formation_core.dir
+/home/Saya/Project/autonomousRobot-main/cpp_core/build/CMakeFiles/formation_cpp.dir
+/home/Saya/Project/autonomousRobot-main/cpp_core/build/CMakeFiles/edit_cache.dir
+/home/Saya/Project/autonomousRobot-main/cpp_core/build/CMakeFiles/rebuild_cache.dir
