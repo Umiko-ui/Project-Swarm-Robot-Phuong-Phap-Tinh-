@@ -243,9 +243,6 @@ formation_cpp_IS_TOP_LEVEL:STATIC=ON
 //Value Computed by CMake
 formation_cpp_SOURCE_DIR:STATIC=/home/Saya/Project/autonomousRobot-main/cpp_core
 
-//No help, variable specified on the command line.
-pybind11_DIR:UNINITIALIZED=/home/Saya/Project/autonomousRobot-main/.venv/lib/python3.14/site-packages/pybind11/share/cmake/pybind11
-
 
 ########################
 # INTERNAL cache entries

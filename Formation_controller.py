@@ -11,9 +11,7 @@ class FormationController:
         self.Rs = Rs
         self.dt = dt
 
-    # =====================================================
     # SAFE NEIGHBOR CONSTRUCTION USING SPATIAL GRID
-    # =====================================================
 
     def build_neighbors(self, p_current):
 
@@ -30,9 +28,9 @@ class FormationController:
 
         coords = np.asarray(p_current,dtype=np.float64)
 
-        # -------------------------------------------------
+        
         # ASSIGN TO GRID
-        # -------------------------------------------------
+    
 
         for i in range(N):
 
@@ -48,9 +46,8 @@ class FormationController:
 
         neighbors = [[] for _ in range(N)]
 
-        # -------------------------------------------------
+        
         # SEARCH NEARBY CELLS
-        # -------------------------------------------------
 
         for i in range(N):
 
@@ -72,9 +69,7 @@ class FormationController:
                             neighbors[i].append(j)
         return neighbors
 
-    # =====================================================
     # BUILD DELTA MATRIX
-    # =====================================================
 
     def build_delta_matrix(self, p_current):
 
@@ -86,9 +81,8 @@ class FormationController:
 
         Delta = np.zeros((N, N),dtype=np.float64)
 
-        # -------------------------------------------------
         # SYMMETRIC DISTANCE GRAPH
-        # -------------------------------------------------
+    
 
         for i in range(N):
             for j in neighbors[i]:
@@ -109,9 +103,98 @@ class FormationController:
 
         return np.ascontiguousarray(Delta,dtype=np.float64)
 
-    # =====================================================
+    
     # MAIN UPDATE
-    # =====================================================
+    
+
+
+    def obstacle_segments_to_numpy(self, obstacles):
+        
+        # EMPTY CASE
+        if obstacles is None:
+            return np.zeros((0, 4), dtype=np.float64)
+
+        # EXTRACT SEGMENTS
+        if hasattr(obstacles, "line_segments"):
+
+            segments = obstacles.line_segments
+
+            if callable(segments):
+                segments = segments()
+
+        elif hasattr(obstacles, "obstacles_line_segments"):
+
+            segments = obstacles.obstacles_line_segments
+
+            if callable(segments):
+                segments = segments()
+
+        elif isinstance(obstacles, list):
+
+            segments = obstacles
+
+        else:
+
+            print("UNKNOWN OBSTACLE TYPE:", type(obstacles))
+
+            return np.zeros((0, 4), dtype=np.float64)
+
+        # FLATTEN NESTED STRUCTURE
+
+        if len(segments) > 0:
+
+            first = segments[0]
+
+            # case:
+            # [
+            #   [seg1, seg2, seg3]
+            # ]
+            if isinstance(first, list) and len(first) > 0:
+
+                inner = first[0]
+
+                if isinstance(inner, tuple) or isinstance(inner, list):
+
+                    if len(inner) == 2:
+
+                        # flatten one level
+                        if len(first[0][0]) == 2:
+                            segments = first
+
+        
+        # CONVERT TO (M,4)
+        
+
+        out = []
+
+        for seg in segments:
+
+            try:
+
+                p1, p2 = seg
+
+                x1 = float(p1[0])
+                y1 = float(p1[1])
+
+                x2 = float(p2[0])
+                y2 = float(p2[1])
+
+                out.append([x1, y1, x2, y2])
+
+            except Exception as e:
+
+                print("INVALID SEGMENT:", seg)
+                print("ERROR:", e)
+
+                continue
+
+        # EMPTY OUTPUT
+
+        if len(out) == 0:
+
+            return np.zeros((0, 4), dtype=np.float64)
+
+        return np.array(out, dtype=np.float64)
 
     def update_positions(
         self,
@@ -121,9 +204,9 @@ class FormationController:
         Delta=None
     ):
 
-        # -------------------------------------------------
+        
         # INPUT SANITIZATION
-        # -------------------------------------------------
+    
 
         p_current_arr = np.ascontiguousarray(np.asarray(p_current,dtype=np.float64))
 
@@ -148,9 +231,9 @@ class FormationController:
                 "p_current and p_target size mismatch"
             )
 
-        # -------------------------------------------------
+        
         # DELTA MATRIX
-        # -------------------------------------------------
+    
 
         if Delta is None:
 
@@ -166,9 +249,9 @@ class FormationController:
                     "Delta must have shape ({N},{N})"
                 )
 
-        # -------------------------------------------------
+        
         # SAFETY CHECKS
-        # -------------------------------------------------
+        
 
         if not np.all(np.isfinite(p_current_arr)):
             raise ValueError(
@@ -185,14 +268,17 @@ class FormationController:
                 "Non-finite values in Delta"
             )
 
-        # -------------------------------------------------
+        obstacle_segments = self.obstacle_segments_to_numpy(
+            obstacles
+        )
+        
         # CALL C++ CORE
-        # -------------------------------------------------
-
-        p_new = formation_cpp.update_positions(
+    
+        p_new = formation_cpp.update_positions_cpp(
             p_current_arr,
             p_target_arr,
             Delta_arr,
+            obstacle_segments,
             float(self.kc),
             float(self.kf),
             float(self.Rs),

@@ -122,6 +122,7 @@ def main(start=(0, 0), goal=(50, 50), map_name=None, num_iter=1,
         Robot=swarm.center,
         iter_count=0,
         obstacles=obstacles,
+        
         experiment=experiment
     )
 
