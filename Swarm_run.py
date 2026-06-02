@@ -126,7 +126,7 @@ def main(start=(0, 0), goal=(50, 50), map_name=None, num_iter=1,
         experiment=experiment
     )
 
-    # 🔥 initialize scatter ONCE
+    # initialize scatter ONCE
     plotter.init_scene(obstacles, swarm)
 
     edges = build_edges(swarm)
